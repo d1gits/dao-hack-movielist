@@ -1,6 +1,24 @@
-# React Truffle Box
+# Scifi movie voting stuffy
 
-This box comes with everything you need to start using smart contracts from a react app. This is as barebones as it gets, so nothing stands in your way.
+Hello! This is a temporary public repo.
+
+Its basically this:
+
+https://www.reddit.com/r/ethereum/comments/3g7lx6/are_you_tired_of_best_scifi_movies_of_all_time/
+
+But then as a react truffle fork from this:
+
+https://github.com/truffle-box/react-box
+
+With a little interface :).
+
+## Demo
+
+The demo version of this repo can be found at http://scifi.l42.nl.
+
+## React-box
+
+The installation instruction and FAQ are the instructions that came with react-box. Everything is adjusted so that the instructions below remain intact.
 
 ## Installation
 
