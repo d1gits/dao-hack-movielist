@@ -25,8 +25,28 @@ class App extends Component {
       },
       SciFiInstance : null
     }
+
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.voteForMovie = this.voteForMovie.bind(this)
+    this.rigTheGame = this.rigTheGame.bind(this)
+  }
+
+  voteForMovie() {
+
+    const {SciFiInstance} = this.state
+    const {movieName, amount, web3, accounts} = this.state
+    const hexMovieName = web3.toHex(movieName)
+
+    SciFiInstance.vote(hexMovieName, {from: accounts[0], value: this.state.web3.toWei(amount,'ether')}).then(() => {
+      this.instantiateContract()
+    });
+  }
+
+  rigTheGame() {
+
+  }
+
   handleChange(event) {
 
     const {value, name} = event.target
