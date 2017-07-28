@@ -53,8 +53,10 @@ class App extends Component {
     // Get accounts.
     this.state.web3.eth.getAccounts((error, accounts) => {
       SciFi.deployed().then((instance) => {
+        SciFiInstance = instance
+        window.instance = SciFiInstance;
         // Stores a given value, 5 by default.
-        return simpleStorageInstance.set(5, {from: accounts[0]})
+        return SciFiInstance.vote(this.state.web3.toHex('kaas'), {from: accounts[0], value: this.state.web3.toWei(0.2,'ether')})//
       }).then((result) => {
         // Get the value from the contract to prove it worked.
         return simpleStorageInstance.get.call(accounts[0])
