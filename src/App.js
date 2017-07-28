@@ -25,6 +25,34 @@ class App extends Component {
       },
       SciFiInstance : null
     }
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+  handleChange(event) {
+
+    const {value, name} = event.target
+    const {movieData} = this.state
+
+    if (name === "movieName") {
+      this.setState({...this.state, movieData : {...movieData, movieName:value}})
+    } else if (name === "amount") {
+      this.setState({...this.state, movieData : {...movieData, amount:value}})
+    } else {
+      this.setState({...this.state, movieData : {...movieData, riggedName:value}})
+    }
+
+  }
+
+  handleSubmit(event) {
+
+    const {name} = event.target
+    const {voteForMovie, rigTheGame} = this
+
+    if (name === "vote") {
+      voteForMovie()
+    } else {
+      rigTheGame()
+    }
+    event.preventDefault()
   }
 
   componentWillMount() {
