@@ -18,12 +18,12 @@ class App extends Component {
     this.state = {
       storageValue: 0,
       web3: null,
+      movies: [],
       movieData: {
         movieName: '',
         amount : 0,
         riggedName: ''
-      },
-      SciFiInstance : null
+      }
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -33,14 +33,31 @@ class App extends Component {
   }
 
   voteForMovie() {
-
-    const {SciFiInstance} = this.state
-    const {movieName, amount, web3, accounts} = this.state
+    const {movieData, web3} = this.state
+    const {movieName, amount} = movieData
     const hexMovieName = web3.toHex(movieName)
 
-    SciFiInstance.vote(hexMovieName, {from: accounts[0], value: this.state.web3.toWei(amount,'ether')}).then(() => {
-      this.instantiateContract()
-    });
+    const contract = require('truffle-contract')
+    const SciFi = contract(SciFiContract)
+
+    SciFi.setProvider(this.state.web3.currentProvider)
+
+    // Declaring this for later so we can chain functions on SciFi.
+    var SciFiInstance
+
+    // Get accounts.
+    web3.eth.getAccounts((error, accounts) => {
+
+      SciFi.deployed().then((instance) => {
+        SciFiInstance = instance
+        // Stores a given value, 5 by default.
+        return SciFiInstance.vote(hexMovieName, {from: accounts[0], value: web3.toWei(amount,'ether')
+      }).then((result) => {
+
+          this.instantiateContract()
+        })
+      })
+    })
   }
 
   rigTheGame() {
