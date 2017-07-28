@@ -50,7 +50,11 @@ h1, h2, h3 {
   color: grey;
 
 }
-
+.crawl-entry {
+  font-size: 80%;
+  margin: 0 auto;
+  line-height: 120%;
+}
 .starwars-title {
   font-family: 'Star Jedi';
   font-size: 52px;
