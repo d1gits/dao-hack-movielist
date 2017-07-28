@@ -79,6 +79,40 @@ class App extends Component {
                 <div className="starwars-title">The Ultimate Sci-Fi Movie list</div>
             </div>
         </div>
+        <div className="container">
+          <div className="row">
+              <div className="col-xs-12 col-sm-4 col-md-3">
+                  <div className="content-box">
+                    <div className="content-box--title" >Vote Here</div>
+                      <p className="content-box--explanation">To vote, simply wire some ether to the contract with the correct name. If someone already put it in the list, be sure to use the exact same spelling so your votes count together!</p>
+                      <form>
+                        <div className="form-group">
+                          <label for="movieNameVote">Movie name</label>
+                          <input type="text" className="form-control" id="movieNameVote" placeholder="Name"></input>
+                        </div>
+                        <div className="form-group">
+                          <label for="amount">Amount of Ether</label>
+                          <input type="text" className="form-control" id="amount" placeholder="Amount"></input>
+                        </div>
+                        <button type="submit" className="btn btn-default">Vote!</button>
+                      </form>
+                  </div>
+              </div>
+              <div className="col-xs-12 col-sm-4 col-md-3 col-sm-offset-4 col-md-offset-6">
+                  <div className="content-box">
+                    <div className="content-box--title" >Rig the game</div>
+                    <p className="content-box--explanation">You can also just rig the game by injecting this contract. It allows you to steal whatever is in the contract and then you can just re-allocate that money to your favorite movie!</p>
+                      <form>
+                        <div className="form-group">
+                          <label for="movieNameRig">Movie name</label>
+                          <input type="text" className="form-control" id="movieNameRig" placeholder="Name"></input>
+                        </div>
+                        <button type="submit" className="btn btn-default">Rig it!</button>
+                      </form>
+                  </div>
+              </div>
+          </div>
+        </div>
         <div className="fade"></div>
         <div className="starwars-container">
           <div className="star-wars">
