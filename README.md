@@ -1,4 +1,4 @@
-# Scifi movie voting stuffy
+# The Ultimate Sci-Fi Movie List
 
 Hello! This is a temporary public repo.
 
@@ -10,11 +10,7 @@ But then as a react truffle fork from this:
 
 https://github.com/truffle-box/react-box
 
-With a little interface :).
-
-## Demo
-
-The demo version of this repo can be found at http://scifi.l42.nl.
+With a little interface.
 
 ## React-box
 
