@@ -17,7 +17,13 @@ class App extends Component {
 
     this.state = {
       storageValue: 0,
-      web3: null
+      web3: null,
+      movieData: {
+        movieName: '',
+        amount : 0,
+        riggedName: ''
+      },
+      SciFiInstance : null
     }
   }
 
