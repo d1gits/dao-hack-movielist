@@ -118,15 +118,15 @@ class App extends Component {
               <div className="col-xs-12 col-sm-4 col-md-3">
                   <div className="content-box">
                     <div className="content-box--title" >Vote Here</div>
-                      <p className="content-box--explanation">To vote, simply wire some ether to the contract with the correct name. If someone already put it in the list, be sure to use the exact same spelling so your votes count together!</p>
-                      <form>
+                      <p className="content-box--explanation">To vote, transfer some ether to the contract with the correct movie name. If someone already put it in the list, be sure to use the exact same spelling so your votes count together!</p>
+                      <form onSubmit={this.handleSubmit} name="vote" >
                         <div className="form-group">
-                          <label for="movieNameVote">Movie name</label>
-                          <input type="text" className="form-control" id="movieNameVote" placeholder="Name"></input>
+                          <label>Movie name</label>
+                          <input type="text" value={this.state.movieName} onChange={this.handleChange} className="form-control" name="movieName" placeholder="Name"></input>
                         </div>
                         <div className="form-group">
-                          <label for="amount">Amount of Ether</label>
-                          <input type="text" className="form-control" id="amount" placeholder="Amount"></input>
+                          <label>Amount of Ether</label>
+                          <input type="text" value={this.state.amount} onChange={this.handleChange} className="form-control" name="amount" placeholder="Amount"></input>
                         </div>
                         <button type="submit" className="btn btn-default">Vote!</button>
                       </form>
@@ -136,10 +136,10 @@ class App extends Component {
                   <div className="content-box">
                     <div className="content-box--title" >Rig the game</div>
                     <p className="content-box--explanation">You can also just rig the game by injecting this contract. It allows you to steal whatever is in the contract and then you can just re-allocate that money to your favorite movie!</p>
-                      <form>
+                      <form onSubmit={this.handleSubmit} name="rig">
                         <div className="form-group">
-                          <label for="movieNameRig">Movie name</label>
-                          <input type="text" className="form-control" id="movieNameRig" placeholder="Name"></input>
+                          <label>Movie name</label>
+                          <input type="text" value={this.state.rigName} onChange={this.handleChange} className="form-control" name="riggedName" placeholder="Name"></input>
                         </div>
                         <button type="submit" className="btn btn-default">Rig it!</button>
                       </form>
