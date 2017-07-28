@@ -111,12 +111,6 @@ class App extends Component {
   }
 
   instantiateContract() {
-    /*
-     * SMART CONTRACT EXAMPLE
-     *
-     * Normally these functions would be called in the context of a
-     * state management library, but for convenience I've placed them here.
-     */
 
     const contract = require('truffle-contract')
     const SciFi = contract(SciFiContract)
