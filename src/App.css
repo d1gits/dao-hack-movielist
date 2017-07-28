@@ -21,6 +21,36 @@ body{
 h1, h2, h3 {
   font-family: 'Oswald', 'Arial Narrow', sans-serif;
 }
+
+.container {
+  width: 1280px;
+  padding: 0 30px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.content-box {
+  padding: 20px 30px;
+  background-color: white;
+  color: black;
+  border-radius: 5px;
+  position:relative;
+  z-index: 100;
+
+}
+
+.content-box--title {
+  font-size: 22px;
+  margin: 0 auto;
+  font-weight: bold;
+  font-family: 'Oswald', 'Arial Narrow', sans-serif;
+}
+.content-box--explanation {
+  font-size: 10px;
+  color: grey;
+
+}
+
 .starwars-title {
   font-family: 'Star Jedi';
   font-size: 52px;
