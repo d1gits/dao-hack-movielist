@@ -4,6 +4,7 @@ import getWeb3 from './utils/getWeb3'
 
 import './css/oswald.css'
 import './css/open-sans.css'
+import './css/flexboxgrid.min.css'
 import './css/pure-min.css'
 import './App.css'
 
