@@ -122,26 +122,43 @@ class App extends Component {
     const SciFi = contract(SciFiContract)
     SciFi.setProvider(this.state.web3.currentProvider)
 
-    // Declaring this for later so we can chain functions on SimpleStorage.
+    // Declaring this for later so we can chain functions on SciFi.
     var SciFiInstance
 
     // Get accounts.
     this.state.web3.eth.getAccounts((error, accounts) => {
 
-      this.setState({...this.state, accounts})
-
       SciFi.deployed().then((instance) => {
         SciFiInstance = instance
 
-        this.setState({...this.state,
-          SciFiInstance
-        });
-        // Stores a given value, 5 by default.
         // Get the value from the contract to prove it worked.
-        return SciFiInstance.get.call(accounts[0])
-      }).then((result) => {
-        // Update state with the result.
-        return this.setState({ storageValue: result.c[0] })
+        return SciFiInstance.movie_num()
+      }).then((movie_num) => {
+
+
+        SciFiInstance.movie_num().then((result)=>{
+          var movie_num = result.c[0];
+          this.setState({...this.state, movies : []});
+          for (var i=0;i < movie_num;i++) {
+              SciFiInstance.movies(i).then((result)=>{
+                var hexname = result;
+                SciFiInstance.bids(hexname).then((result)=>{
+                  var amount = result.c[0];
+
+                  const movies = [...this.state.movies, {
+                    name: this.state.web3.toAscii(hexname),
+                    amount: parseFloat(amount/10000)}
+                  ]
+
+                  const sorted_movies= movies.sort(function(a,b){return ((a.amount > b.amount)?-1:((a.amount < b.amount)?1:0))});
+
+                  this.setState({
+                    ...this.state, movies : sorted_movies
+                  })
+                });
+              });
+          }
+        })
       })
     })
   }
@@ -167,7 +184,7 @@ class App extends Component {
                         </div>
                         <div className="form-group">
                           <label>Amount of Ether</label>
-                          <input type="text" value={this.state.amount} onChange={this.handleChange} className="form-control" name="amount" placeholder="Amount"></input>
+                          <input type="number" step="0.0001" value={this.state.amount} onChange={this.handleChange} className="form-control" name="amount" placeholder="Amount"></input>
                         </div>
                         <button type="submit" className="btn btn-default">Vote!</button>
                       </form>
@@ -176,7 +193,7 @@ class App extends Component {
               <div className="col-xs-12 col-sm-4 col-md-3 col-sm-offset-4 col-md-offset-6">
                   <div className="content-box">
                     <div className="content-box--title" >Rig the game</div>
-                    <p className="content-box--explanation">You can also just rig the game by injecting this contract. It allows you to steal whatever is in the contract and then you can just re-allocate that money to your favorite movie!</p>
+                    <p className="content-box--explanation">You can also just rig the game by using this contract. It allows you to steal whatever is in the contract and then you can just re-allocate that money to your favorite movie!</p>
                       <form onSubmit={this.handleSubmit} name="rig">
                         <div className="form-group">
                           <label>Movie name</label>
@@ -200,10 +217,9 @@ class App extends Component {
                 <p>Please wait until the end of the text for us to reveal the best sci-fi movie of all time or just use inspect element.</p>
                 <p>We hope you're satisfied with the results, and if not please throw more money at this contract to make sure you are always right when someone asks you what the best star wars,... eeh science fiction movie of all time is.</p>
                 <p>Here are the results:</p>
-
-                <p>1. Independence day: 10.5 ETH Wasted</p>
-                <p>1. Independence day: 10.5 ETH Wasted</p>
-                <p>1. Independence day: 10.5 ETH Wasted</p>
+                {this.state.movies.map((movie,index) =>{
+                  return (<p className="crawl-entry" key={index+1} >{index+1}. {movie.amount} ETH - {movie.name}</p>)
+                })}
             </div>
           </div>
         </div>
