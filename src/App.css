@@ -1,8 +1,21 @@
 /* PAGE */
 
-body,
-.pure-g [class*=pure-u] {
+body{
   font-family: 'Open Sans', sans-serif;
+  background-color: #1A1930;
+  background-image: url("/img/bg-grid-pattern.png");
+  background-size: 104.5px;
+  background-position: top center;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  text-rendering: auto;
+  text-rendering: optimizeSpeed;
+  text-rendering: optimizeLegibility;
+  text-rendering: geometricPrecision;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 h1, h2, h3 {
