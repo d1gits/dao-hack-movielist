@@ -6,6 +6,8 @@ import './css/oswald.css'
 import './css/open-sans.css'
 import './css/star-wars.css'
 import './css/flexboxgrid.min.css'
+import './css/custom-bootstrap/bootstrap-theme.min.css'
+import './css/custom-bootstrap/bootstrap.min.css'
 import './css/pure-min.css'
 import './App.css'
 
