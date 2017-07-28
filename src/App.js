@@ -72,7 +72,30 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-      
+        <div className="row">
+            <div className="col-xs-12">
+                <div className="starwars-title">The Ultimate Sci-Fi Movie list</div>
+            </div>
+        </div>
+        <div className="fade"></div>
+        <div className="starwars-container">
+          <div className="star-wars">
+            <div className="crawl">
+              <div className="title">
+                <p className="crawl-title">The Distributed version</p>
+              </div>
+
+                <p>As in any healthy plutocracy, money will decide. Vote with your Ether! </p>
+                <p>Please wait until the end of the text for us to reveal the best sci-fi movie of all time or just use inspect element.</p>
+                <p>We hope you're satisfied with the results, and if not please throw more money at this contract to make sure you are always right when someone asks you what the best star wars,... eeh science fiction movie of all time is.</p>
+                <p>Here are the results:</p>
+
+                <p>1. Independence day: 10.5 ETH Wasted</p>
+                <p>1. Independence day: 10.5 ETH Wasted</p>
+                <p>1. Independence day: 10.5 ETH Wasted</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
