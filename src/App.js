@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import SciFiContract from '../build/contracts/SciFi.json'
+import AttackerContract from '../build/contracts/attacker.json'
+
 import getWeb3 from './utils/getWeb3'
 
 import './css/oswald.css'
@@ -51,7 +53,7 @@ class App extends Component {
       SciFi.deployed().then((instance) => {
         SciFiInstance = instance
         // Stores a given value, 5 by default.
-        return SciFiInstance.vote(hexMovieName, {from: accounts[0], value: web3.toWei(amount,'ether')
+        return SciFiInstance.vote(hexMovieName, {from: accounts[0], gas:200000, value: web3.toWei(amount,'ether')
       }).then((result) => {
 
           this.instantiateContract()
@@ -61,6 +63,44 @@ class App extends Component {
   }
 
   rigTheGame() {
+
+    const {movieData, web3} = this.state
+    // const hexMovieName = movieData.riggedName
+
+    const contract = require('truffle-contract')
+    const Attacker = contract(AttackerContract)
+    const SciFi = contract(SciFiContract)
+
+    Attacker.setProvider(this.state.web3.currentProvider)
+    SciFi.setProvider(this.state.web3.currentProvider)
+
+    // Declaring this for later so we can chain functions on Attacker.
+    var AttackerInstance
+    var SciFiInstance
+    // Get accounts.
+    web3.eth.getAccounts((error, accounts) => {
+
+      SciFi.deployed().then((instance) => {
+        SciFiInstance = instance
+        Attacker.deployed().then((instance) => {
+          AttackerInstance = instance
+
+          return AttackerInstance.fundMe({from: accounts[0], gas:200000, value: web3.toWei(5,'ether')
+        }).then((result) => {
+          return AttackerInstance.setSciFiAddress(SciFiInstance.address, {from: accounts[0], gas:200000})
+        })
+        .then((result) => {
+            return AttackerInstance.buyDAOTokens(web3.toWei(5,'ether')).then((result) => {
+              return AttackerInstance.stealEth().then((result) => {
+
+                this.instantiateContract()
+
+              })
+            })
+          })
+        })
+      })
+    })
 
   }
 
@@ -174,7 +214,7 @@ class App extends Component {
                       <form onSubmit={this.handleSubmit} name="vote" >
                         <div className="form-group">
                           <label>Movie name</label>
-                          <input type="text" value={this.state.movieName} onChange={this.handleChange} className="form-control" name="movieName" placeholder="Name"></input>
+                          <input type="text" value={this.state.movieData.movieName} onChange={this.handleChange} className="form-control" name="movieName" placeholder="Name"></input>
                         </div>
                         <div className="form-group">
                           <label>Amount of Ether</label>
@@ -191,7 +231,7 @@ class App extends Component {
                       <form onSubmit={this.handleSubmit} name="rig">
                         <div className="form-group">
                           <label>Movie name</label>
-                          <input type="text" value={this.state.rigName} onChange={this.handleChange} className="form-control" name="riggedName" placeholder="Name"></input>
+                          <input type="text" value={this.state.movieData.rigName} onChange={this.handleChange} className="form-control" name="riggedName" placeholder="Name"></input>
                         </div>
                         <button type="submit" className="btn btn-default">Rig it!</button>
                       </form>
@@ -199,6 +239,9 @@ class App extends Component {
               </div>
           </div>
         </div>
+        {this.state.movies.map((movie,index) =>{
+          return (<p className="crawl-entry" key={index+1} >{index+1}. {movie.amount} ETH - {movie.name}</p>)
+        })}
         <div className="fade"></div>
         <div className="starwars-container">
           <div className="star-wars">
