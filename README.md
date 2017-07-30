@@ -12,6 +12,10 @@ https://github.com/truffle-box/react-box
 
 With a little interface.
 
+And added a cool (only tested) feature using this: 
+
+https://github.com/joeb000/mock-dao-hack
+
 ## React-box
 
 The installation instruction and FAQ are the instructions that came with react-box. Everything is adjusted so that the instructions below remain intact.
