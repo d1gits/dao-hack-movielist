@@ -239,9 +239,7 @@ class App extends Component {
               </div>
           </div>
         </div>
-        {this.state.movies.map((movie,index) =>{
-          return (<p className="crawl-entry" key={index+1} >{index+1}. {movie.amount} ETH - {movie.name}</p>)
-        })}
+
         <div className="fade"></div>
         <div className="starwars-container">
           <div className="star-wars">
