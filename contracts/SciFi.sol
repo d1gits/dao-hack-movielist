@@ -1,10 +1,9 @@
-pragma solidity ^0.4.2;
-
+pragma solidity ^0.4.13;
 
 contract SciFi {
 
   event PaymentCalled(address payee, uint amount);
-  event TokensBought(address buyer, uint amount);
+  event VotedOnMovie(address buyer, uint amount, bytes32 name);
   event TokensTransfered(address from, address to, uint amount);
   event InsufficientFunds(uint bal, uint amount);
 
@@ -21,7 +20,6 @@ contract SciFi {
 
       balances[msg.sender] += msg.value;
       uint val=bids[name];
-      uint userVal=userBids[msg.sender][name];
 
       if (val==0) {
           movies[movie_num++]=name;
@@ -30,6 +28,7 @@ contract SciFi {
       bids[name]+=msg.value;
       userBids[msg.sender][name]+=msg.value;
 
+      VotedOnMovie(msg.sender, msg.value, name);
   }
 
   function transferTokens(address _to, uint _amount){

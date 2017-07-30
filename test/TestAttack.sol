@@ -19,7 +19,7 @@ contract TestAttack {
 
 		scifi.vote.value(weiToBeStolen)('');
 
-		attacker.setDAOAddress(DeployedAddresses.SciFi());
+		attacker.setSciFiAddress(DeployedAddresses.SciFi());
 		attacker.fundMe.value(weiToUseForStealing)();
 		attacker.buyDAOTokens(weiToUseForStealing);
 		attacker.stealEth();
