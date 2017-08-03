@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
 import SciFiContract from '../build/contracts/SciFi.json'
 import AttackerContract from '../build/contracts/attacker.json'
-
 import getWeb3 from './utils/getWeb3'
+import SciFiHelper from './utils/SciFiHelper'
+import AttackerHelper from './utils/AttackerHelper'
 
+//styling stuff
 import './css/oswald.css'
 import './css/open-sans.css'
 import './css/star-wars.css'
@@ -17,97 +19,64 @@ class App extends Component {
   constructor(props) {
     super(props)
 
+    const contract = require('truffle-contract'),
+         SciFi     = contract(SciFiContract),
+         Attacker  = contract(AttackerContract);
+
     this.state = {
-      storageValue: 0,
-      web3: null,
-      movies: [],
-      movieData: {
-        movieName: '',
-        amount : 0,
-        riggedName: ''
+      web3           : null,
+      sciFiHelper    : new SciFiHelper(SciFi),
+      attackerHelper : new AttackerHelper(Attacker,SciFi),
+      movies         : [],
+      movieData      : {
+        movieName  : '',
+        amount     : 0,
+        riggedName : ''
       }
     }
 
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
-    this.voteForMovie = this.voteForMovie.bind(this)
-    this.rigTheGame = this.rigTheGame.bind(this)
+    // bindings
+    this.handleChange   = this.handleChange.bind(this)
+    this.handleSubmit   = this.handleSubmit.bind(this)
+    this.voteForMovie   = this.voteForMovie.bind(this)
+    this.withdrawVotes  = this.withdrawVotes.bind(this)
+    this.rigTheGame     = this.rigTheGame.bind(this)
+    this.getMovieList   = this.getMovieList.bind(this)
+  }
+
+  withdrawVotes() {
+    const {sciFiHelper, web3}        = this.state;
+    sciFiHelper.withdrawVotes(web3).then(()=>{
+      this.getMovieList();
+    })
   }
 
   voteForMovie() {
-    const {movieData, web3} = this.state
-    const {movieName, amount} = movieData
-    const hexMovieName = web3.toHex(movieName)
-
-    const contract = require('truffle-contract')
-    const SciFi = contract(SciFiContract)
-
-    SciFi.setProvider(this.state.web3.currentProvider)
-
-    // Declaring this for later so we can chain functions on SciFi.
-    var SciFiInstance
-
-    // Get accounts.
-    web3.eth.getAccounts((error, accounts) => {
-
-      SciFi.deployed().then((instance) => {
-        SciFiInstance = instance
-        // Stores a given value, 5 by default.
-        return SciFiInstance.vote(hexMovieName, {from: accounts[0], gas:200000, value: web3.toWei(amount,'ether')
-      }).then((result) => {
-
-          this.instantiateContract()
-        })
-      })
+    const {sciFiHelper, movieData, web3} = this.state;
+    sciFiHelper.vote(web3, movieData).then(()=>{
+      this.getMovieList();
     })
   }
 
   rigTheGame() {
 
-    const {movieData, web3} = this.state
-    // const hexMovieName = movieData.riggedName
+    const {
+      attackerHelper,
+      sciFiHelper,
+      movieData,
+      web3} = this.state;
 
-    const contract = require('truffle-contract')
-    const Attacker = contract(AttackerContract)
-    const SciFi = contract(SciFiContract)
-
-    Attacker.setProvider(this.state.web3.currentProvider)
-    SciFi.setProvider(this.state.web3.currentProvider)
-
-    // Declaring this for later so we can chain functions on Attacker.
-    var AttackerInstance
-    var SciFiInstance
-    // Get accounts.
-    web3.eth.getAccounts((error, accounts) => {
-
-      SciFi.deployed().then((instance) => {
-        SciFiInstance = instance
-        Attacker.deployed().then((instance) => {
-          AttackerInstance = instance
-
-          return AttackerInstance.fundMe({from: accounts[0], gas:200000, value: web3.toWei(5,'ether')
-        }).then((result) => {
-          return AttackerInstance.setSciFiAddress(SciFiInstance.address, {from: accounts[0], gas:200000})
-        })
-        .then((result) => {
-            return AttackerInstance.buyDAOTokens(web3.toWei(5,'ether')).then((result) => {
-              return AttackerInstance.stealEth().then((result) => {
-
-                this.instantiateContract()
-
-              })
-            })
-          })
-        })
+    attackerHelper.attackSciFi(web3, movieData).then((amount)=>{
+      sciFiHelper.vote(web3, movieData).then(()=>{
+        this.getMovieList();
       })
     })
-
   }
 
   handleChange(event) {
 
     const {value, name} = event.target
-    const {movieData} = this.state
+    const {movieData}   = this.state
 
     if (name === "movieName") {
       this.setState({...this.state, movieData : {...movieData, movieName:value}})
@@ -121,15 +90,18 @@ class App extends Component {
 
   handleSubmit(event) {
 
-    const {name} = event.target
-    const {voteForMovie, rigTheGame} = this
+    const {name}                                    = event.target;
+    const {voteForMovie, rigTheGame, withdrawVotes} = this;
 
+    event.preventDefault();
     if (name === "vote") {
       voteForMovie()
-    } else {
+    } else if (name === "rig") {
       rigTheGame()
+    } else if (name === "withdraw") {
+      withdrawVotes()
     }
-    event.preventDefault()
+
   }
 
   componentWillMount() {
@@ -141,61 +113,28 @@ class App extends Component {
       this.setState({
         web3: results.web3
       })
-
-      // Instantiate contract once web3 provided.
-      this.instantiateContract()
     })
-    .catch(() => {
+    .catch((r) => {
+      console.log(r);
       console.log('Error finding web3.')
     })
-  }
-
-  instantiateContract() {
-
-    const contract = require('truffle-contract')
-    const SciFi = contract(SciFiContract)
-    SciFi.setProvider(this.state.web3.currentProvider)
-
-    // Declaring this for later so we can chain functions on SciFi.
-    var SciFiInstance
-
-    // Get accounts.
-    this.state.web3.eth.getAccounts((error, accounts) => {
-
-      SciFi.deployed().then((instance) => {
-        SciFiInstance = instance
-
-        // Get the value from the contract to prove it worked.
-        return SciFiInstance.movie_num()
-      }).then((movie_num) => {
-
-
-        SciFiInstance.movie_num().then((result)=>{
-          var movie_num = result.c[0];
-          this.setState({...this.state, movies : []});
-          for (var i=0;i < movie_num;i++) {
-              SciFiInstance.movies(i).then((result)=>{
-                var hexname = result;
-                SciFiInstance.bids(hexname).then((result)=>{
-                  var amount = result.c[0];
-
-                  const movies = [...this.state.movies, {
-                    name: this.state.web3.toAscii(hexname),
-                    amount: parseFloat(amount/10000)}
-                  ]
-
-                  const sorted_movies= movies.sort(function(a,b){return ((a.amount > b.amount)?-1:((a.amount < b.amount)?1:0))});
-
-                  this.setState({
-                    ...this.state, movies : sorted_movies
-                  })
-                });
-              });
-          }
-        })
-      })
+    .then( () =>{
+      // Get the movie list once web3 is provided
+      this.getMovieList()
     })
   }
+
+  getMovieList() {
+    const {sciFiHelper, movieData, web3} = this.state;
+    sciFiHelper.getSortedMovies(web3).then((sortedMovies)=>{
+      console.log(sortedMovies)
+      this.setState({
+        ...this.state, movies : sortedMovies
+      })
+    })
+
+  }
+
 
   render() {
     return (
@@ -222,6 +161,10 @@ class App extends Component {
                         </div>
                         <button type="submit" className="btn btn-default">Vote!</button>
                       </form>
+                      <p className="content-box--explanation">Didn't vote for Starwars? Click here to withdraw your votes and adjust accordingly:</p>
+                      <form onSubmit={this.handleSubmit} name="withdraw" >
+                        <button type="submit" className="btn btn-danger">Whithdraw votes</button>
+                      </form>
                   </div>
               </div>
               <div className="col-xs-12 col-sm-4 col-md-3 col-sm-offset-4 col-md-offset-6">
@@ -239,7 +182,9 @@ class App extends Component {
               </div>
           </div>
         </div>
-
+        {this.state.movies.map((movie,index) =>{
+          return (<p className="crawl-entry" key={index+1} >{index+1}. {movie.amount} ETH - {movie.name}</p>)
+        })}
         <div className="fade"></div>
         <div className="starwars-container">
           <div className="star-wars">
