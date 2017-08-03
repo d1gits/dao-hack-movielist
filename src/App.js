@@ -5,6 +5,8 @@ import getWeb3 from './utils/getWeb3'
 import SciFiHelper from './utils/SciFiHelper'
 import AttackerHelper from './utils/AttackerHelper'
 
+//components
+import VoteComponent from './components/Vote'
 //styling stuff
 import './css/oswald.css'
 import './css/open-sans.css'
@@ -147,25 +149,7 @@ class App extends Component {
         <div className="container">
           <div className="row">
               <div className="col-xs-12 col-sm-4 col-md-3">
-                  <div className="content-box">
-                    <div className="content-box--title" >Vote Here</div>
-                      <p className="content-box--explanation">To vote, transfer some ether to the contract with the correct movie name. If someone already put it in the list, be sure to use the exact same spelling so your votes count together!</p>
-                      <form onSubmit={this.handleSubmit} name="vote" >
-                        <div className="form-group">
-                          <label>Movie name</label>
-                          <input type="text" value={this.state.movieData.movieName} onChange={this.handleChange} className="form-control" name="movieName" placeholder="Name"></input>
-                        </div>
-                        <div className="form-group">
-                          <label>Amount of Ether</label>
-                          <input type="number" step="0.0001" value={this.state.amount} onChange={this.handleChange} className="form-control" name="amount" placeholder="Amount"></input>
-                        </div>
-                        <button type="submit" className="btn btn-default">Vote!</button>
-                      </form>
-                      <p className="content-box--explanation">Didn't vote for Starwars? Click here to withdraw your votes and adjust accordingly:</p>
-                      <form onSubmit={this.handleSubmit} name="withdraw" >
-                        <button type="submit" className="btn btn-danger">Whithdraw votes</button>
-                      </form>
-                  </div>
+                <VoteComponent voteForMovie={this.voteForMovie} handleChange={this.handleChange} movieData={this.state.movieData}/>
               </div>
               <div className="col-xs-12 col-sm-4 col-md-3 col-sm-offset-4 col-md-offset-6">
                   <div className="content-box">
@@ -182,9 +166,6 @@ class App extends Component {
               </div>
           </div>
         </div>
-        {this.state.movies.map((movie,index) =>{
-          return (<p className="crawl-entry" key={index+1} >{index+1}. {movie.amount} ETH - {movie.name}</p>)
-        })}
         <div className="fade"></div>
         <div className="starwars-container">
           <div className="star-wars">
