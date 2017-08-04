@@ -1,10 +1,6 @@
 import React, { Component } from 'react'
 
 class VoteComponent extends Component {
-  constructor(props) {
-    super(props)
-  }
-
 
   handleSubmit(event) {
     const {voteForMovie } = this.props;
