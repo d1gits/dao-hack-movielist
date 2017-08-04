@@ -102,7 +102,13 @@ contract SciFi {
           for (uint j=1; j<= movies[i].numVotes; j++){
             if (movies[i].votes[j].bidder == msg.sender) {
               // redue movies score with vote value
-              movies[i].score += -movies[i].votes[j].value;
+              if(int(movies[i].score) - int(movies[i].votes[j].value) > 0) {
+                movies[i].score -= movies[i].votes[j].value;
+                movies[i].votes[j].value = 0;
+              } else {
+                movies[i].score = 0;
+                movies[i].votes[j].value = 0;
+              }
 
               UpdateExistingMovie(
                 movies[i].votes[j].bidder,

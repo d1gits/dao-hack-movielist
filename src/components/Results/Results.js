@@ -2,10 +2,6 @@ import React, { Component } from 'react'
 
 class ResultsComponent extends Component {
 
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     return (
       <div className="starwars-container">

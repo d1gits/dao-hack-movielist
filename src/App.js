@@ -29,11 +29,12 @@ class App extends Component {
          Attacker  = contract(AttackerContract);
 
     this.state = {
-      web3           : null,
-      sciFiHelper    : new SciFiHelper(SciFi),
-      attackerHelper : new AttackerHelper(Attacker,SciFi),
-      movies         : [],
-      movieData      : {
+      web3            : null,
+      sciFiHelper     : new SciFiHelper(SciFi),
+      attackerHelper  : new AttackerHelper(Attacker,SciFi),
+      movies          : [],
+      balance         : 0,
+      movieData       : {
         movieName  : '',
         amount     : 0,
         riggedName : ''
@@ -46,34 +47,36 @@ class App extends Component {
     this.withdrawVotes  = this.withdrawVotes.bind(this)
     this.rigTheGame     = this.rigTheGame.bind(this)
     this.getMovieList   = this.getMovieList.bind(this)
+    this.updateBalance   = this.updateBalance.bind(this)
+
   }
 
-  withdrawVotes() {
+  withdrawVotes(event) {
+    event.preventDefault()
     const {sciFiHelper, web3}        = this.state;
     sciFiHelper.withdrawVotes(web3).then(()=>{
       this.getMovieList();
     })
   }
 
-  voteForMovie() {
+  voteForMovie(event) {
+    event.preventDefault()
     const {sciFiHelper, movieData, web3} = this.state;
     sciFiHelper.vote(web3, movieData).then(()=>{
       this.getMovieList();
     })
   }
 
-  rigTheGame() {
-
+  rigTheGame(event) {
+    event.preventDefault();
     const {
       attackerHelper,
       sciFiHelper,
       movieData,
       web3} = this.state;
 
-    attackerHelper.attackSciFi(web3, movieData).then((amount)=>{
-      sciFiHelper.vote(web3, movieData).then(()=>{
-        this.getMovieList();
-      })
+    attackerHelper.attackSciFi(web3, movieData).then(()=>{
+      this.getMovieList();
     })
   }
 
@@ -107,27 +110,39 @@ class App extends Component {
     .then( () =>{
       // Get the movie list once web3 is provided
       this.getMovieList()
+      // Update user balance once web3 is provided
+      this.updateBalance()
     })
   }
 
   //Gets the list of movies from the smart contract and puts it in the state
   getMovieList() {
-    const {sciFiHelper, web3} = this.state;
+    const {sciFiHelper, web3} = this.state,
+          {updateBalance}     = this;
     sciFiHelper.getSortedMovies(web3).then((sortedMovies)=>{
       console.log(sortedMovies)
       this.setState({
         ...this.state, movies : sortedMovies
       })
+      updateBalance()
     })
   }
 
+  updateBalance() {
+    const {web3} = this.state;
+    this.setState({
+      ...this.state,
+      balance : web3.eth.getBalance(web3.eth.accounts[0]).c[0]/10000
+    })
+  }
 
   render() {
-    const {movies, movieData}                      = this.state,
-          {voteForMovie, handleChange, rigTheGame} = this;
-          
+    const {movies, balance}                      = this.state,
+          {voteForMovie, handleChange, rigTheGame, withdrawVotes} = this;
+
     return (
       <div className="App">
+        <div className="balanceBox">Your Balance: {balance} ETH</div>
         <div className="row">
             <div className="col-xs-12">
                 <div className="starwars-title">The Ultimate Sci-Fi Movie list</div>
@@ -138,14 +153,13 @@ class App extends Component {
               <div className="col-xs-12 col-sm-4 col-md-3">
                 <VoteComponent
                   voteForMovie={voteForMovie}
-                  handleChange={handleChange}
-                  movieData={movieData}/>
+                  withdrawVotes={withdrawVotes}
+                  handleChange={handleChange}/>
               </div>
               <div className="col-xs-12 col-sm-4 col-md-3 col-sm-offset-4 col-md-offset-6">
                 <RigComponent
-                  voteForMovie={rigTheGame}
-                  handleChange={handleChange}
-                  movieData={movieData}/>
+                  rigTheGame={rigTheGame}
+                  handleChange={handleChange}/>
               </div>
           </div>
         </div>
