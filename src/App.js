@@ -5,6 +5,11 @@ import getWeb3 from './utils/getWeb3'
 import SciFiHelper from './utils/SciFiHelper'
 import AttackerHelper from './utils/AttackerHelper'
 
+//components
+import VoteComponent from './components/Vote'
+import RigComponent from './components/Rig'
+import ResultsComponent from './components/Results'
+
 //styling stuff
 import './css/oswald.css'
 import './css/open-sans.css'
@@ -37,7 +42,6 @@ class App extends Component {
 
     // bindings
     this.handleChange   = this.handleChange.bind(this)
-    this.handleSubmit   = this.handleSubmit.bind(this)
     this.voteForMovie   = this.voteForMovie.bind(this)
     this.withdrawVotes  = this.withdrawVotes.bind(this)
     this.rigTheGame     = this.rigTheGame.bind(this)
@@ -88,34 +92,16 @@ class App extends Component {
 
   }
 
-  handleSubmit(event) {
-
-    const {name}                                    = event.target;
-    const {voteForMovie, rigTheGame, withdrawVotes} = this;
-
-    event.preventDefault();
-    if (name === "vote") {
-      voteForMovie()
-    } else if (name === "rig") {
-      rigTheGame()
-    } else if (name === "withdraw") {
-      withdrawVotes()
-    }
-
-  }
-
   componentWillMount() {
     // Get network provider and web3 instance.
     // See utils/getWeb3 for more info.
-
     getWeb3
     .then(results => {
       this.setState({
         web3: results.web3
       })
     })
-    .catch((r) => {
-      console.log(r);
+    .catch(() => {
       console.log('Error finding web3.')
     })
     .then( () =>{
@@ -124,19 +110,22 @@ class App extends Component {
     })
   }
 
+  //Gets the list of movies from the smart contract and puts it in the state
   getMovieList() {
-    const {sciFiHelper, movieData, web3} = this.state;
+    const {sciFiHelper, web3} = this.state;
     sciFiHelper.getSortedMovies(web3).then((sortedMovies)=>{
       console.log(sortedMovies)
       this.setState({
         ...this.state, movies : sortedMovies
       })
     })
-
   }
 
 
   render() {
+    const {movies, movieData}                      = this.state,
+          {voteForMovie, handleChange, rigTheGame} = this;
+          
     return (
       <div className="App">
         <div className="row">
@@ -147,62 +136,21 @@ class App extends Component {
         <div className="container">
           <div className="row">
               <div className="col-xs-12 col-sm-4 col-md-3">
-                  <div className="content-box">
-                    <div className="content-box--title" >Vote Here</div>
-                      <p className="content-box--explanation">To vote, transfer some ether to the contract with the correct movie name. If someone already put it in the list, be sure to use the exact same spelling so your votes count together!</p>
-                      <form onSubmit={this.handleSubmit} name="vote" >
-                        <div className="form-group">
-                          <label>Movie name</label>
-                          <input type="text" value={this.state.movieData.movieName} onChange={this.handleChange} className="form-control" name="movieName" placeholder="Name"></input>
-                        </div>
-                        <div className="form-group">
-                          <label>Amount of Ether</label>
-                          <input type="number" step="0.0001" value={this.state.amount} onChange={this.handleChange} className="form-control" name="amount" placeholder="Amount"></input>
-                        </div>
-                        <button type="submit" className="btn btn-default">Vote!</button>
-                      </form>
-                      <p className="content-box--explanation">Didn't vote for Starwars? Click here to withdraw your votes and adjust accordingly:</p>
-                      <form onSubmit={this.handleSubmit} name="withdraw" >
-                        <button type="submit" className="btn btn-danger">Whithdraw votes</button>
-                      </form>
-                  </div>
+                <VoteComponent
+                  voteForMovie={voteForMovie}
+                  handleChange={handleChange}
+                  movieData={movieData}/>
               </div>
               <div className="col-xs-12 col-sm-4 col-md-3 col-sm-offset-4 col-md-offset-6">
-                  <div className="content-box">
-                    <div className="content-box--title" >Rig the game</div>
-                    <p className="content-box--explanation">You can also just rig the game by using this contract. It allows you to steal whatever is in the contract and then you can just re-allocate that money to your favorite movie!</p>
-                      <form onSubmit={this.handleSubmit} name="rig">
-                        <div className="form-group">
-                          <label>Movie name</label>
-                          <input type="text" value={this.state.movieData.rigName} onChange={this.handleChange} className="form-control" name="riggedName" placeholder="Name"></input>
-                        </div>
-                        <button type="submit" className="btn btn-default">Rig it!</button>
-                      </form>
-                  </div>
+                <RigComponent
+                  voteForMovie={rigTheGame}
+                  handleChange={handleChange}
+                  movieData={movieData}/>
               </div>
           </div>
         </div>
-        {this.state.movies.map((movie,index) =>{
-          return (<p className="crawl-entry" key={index+1} >{index+1}. {movie.amount} ETH - {movie.name}</p>)
-        })}
         <div className="fade"></div>
-        <div className="starwars-container">
-          <div className="star-wars">
-            <div className="crawl">
-              <div className="title">
-                <p className="crawl-title">The Distributed version</p>
-              </div>
-
-                <p>As in any healthy plutocracy, money will decide. Vote with your Ether! </p>
-                <p>Please wait until the end of the text for us to reveal the best sci-fi movie of all time or just use inspect element.</p>
-                <p>We hope you're satisfied with the results, and if not please throw more money at this contract to make sure you are always right when someone asks you what the best star wars,... eeh science fiction movie of all time is.</p>
-                <p>Here are the results:</p>
-                {this.state.movies.map((movie,index) =>{
-                  return (<p className="crawl-entry" key={index+1} >{index+1}. {movie.amount} ETH - {movie.name}</p>)
-                })}
-            </div>
-          </div>
-        </div>
+        <ResultsComponent movies={movies}/>
       </div>
     );
   }
