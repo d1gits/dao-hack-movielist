@@ -1,20 +1,25 @@
 # The Ultimate Sci-Fi Movie List
 
-Hello! This is a temporary public repo.
+Hello! This is a temporary public repo containing a mock version of the dao hack.
+Please don't ever put this on a production blockchain.
 
 Its basically this:
 
 https://www.reddit.com/r/ethereum/comments/3g7lx6/are_you_tired_of_best_scifi_movies_of_all_time/
 
-But then as a react truffle fork from this:
+But then as a truffle-box:
 
 https://github.com/truffle-box/react-box
 
 With a little interface.
 
-And added a cool (only tested) feature using this: 
+And added a cool dao exploit feature based on this:
 
 https://github.com/joeb000/mock-dao-hack
+
+## Warning
+
+Don't ever deploy anything written in this repo on a production blockchain. The contracts in here have been written to contain exploits. And the exploit has been added as an example. Your Ether will get stolen.
 
 ## React-box
 
@@ -44,7 +49,7 @@ The installation instruction and FAQ are the instructions that came with react-b
     npm run start
     ```
 
-5. Jest is included for testing React components and Truffle's own suite is incldued for smart contracts. Be sure you've compile your contracts before running jest, or you'll receive some file not found errors.
+5. Jest is included for testing React components and Truffle's own suite is included for smart contracts. Be sure you've compile your contracts before running jest, or you'll receive some file not found errors.
     ```javascript
     // Runs Jest for component tests.
     npm run test
@@ -57,17 +62,3 @@ The installation instruction and FAQ are the instructions that came with react-b
     ```javascript
     npm run build
     ```
-
-## FAQ
-
-* __Why is there both a truffle.js file and a truffle-config.js file?__
-
-    Truffle requires the truffle.js file be named truffle-config on Windows machines. Feel free to delete the file that doesn't correspond to your platform.
-
-* __Where is my production build?__
-
-    The production build will be in the build_webpack folder. This is because Truffle outputs contract compilations to the build folder.
-
-* __Where can I find more documentation?__
-
-    All truffle boxes are a marriage of [Truffle](http://truffleframework.com/) and a React setup created with [create-react-app](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md). Either one would be a great place to start!
