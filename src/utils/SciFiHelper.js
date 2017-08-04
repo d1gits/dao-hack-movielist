@@ -28,7 +28,9 @@ class SciFiHelper {
 				return contract.deployed().then((instance) => {
 					SciFiInstance = instance
 					// vote for movie
-					return SciFiInstance.vote(hexMovieName, {from: accounts[0], gas:200000, value: web3.toWei(amount,'ether')
+					return SciFiInstance.vote(
+						hexMovieName,
+						{from: accounts[0], gas:200000, value: web3.toWei(amount,'ether')
 				}).then((result) => {
 						resolve();
 					})
@@ -52,7 +54,9 @@ class SciFiHelper {
 				.then((instance) => {
 	        SciFiInstance = instance
 					// withdaws the money and resets the votes
-	        return SciFiInstance.withdraw(accounts[0],{from: accounts[0], gas:500000})
+	        return SciFiInstance.withdraw(
+						accounts[0],
+						{from: accounts[0], gas:500000})
 	      })
 				.then((result) => {
 	        resolve()
@@ -104,9 +108,13 @@ class SciFiHelper {
 						let numMovies = result.c[0];
 		        let movies = [];
 						// console.log(numMovies)
-						return this.getAllMovies(movies, 1, numMovies, SciFiInstance, web3).then((allMovies) => {
+						return this.getAllMovies(movies, 1, numMovies, SciFiInstance, web3)
+						.then((allMovies) => {
 							// sort the movies
-							let sortedMovies = allMovies.sort(function(a,b){return ((a.amount > b.amount)?-1:((a.amount < b.amount)?1:0))});
+							let sortedMovies = allMovies.sort(
+								function(a,b){
+									return ((a.amount > b.amount)?-1:((a.amount < b.amount)?1:0))
+								});
 							// resolve the initial promise with a sorted list of movies
 							resolve(sortedMovies);
 						});
