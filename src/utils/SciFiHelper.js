@@ -28,6 +28,7 @@ class SciFiHelper {
 				return contract.deployed().then((instance) => {
 					SciFiInstance = instance
 					// vote for movie
+					console.log('vote for movie')
 					return SciFiInstance.vote(
 						hexMovieName,
 						{from: accounts[0], gas:200000, value: web3.toWei(amount,'ether')
