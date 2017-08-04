@@ -33,9 +33,14 @@ The installation instruction and FAQ are the instructions that came with react-b
     npm install -g ethereumjs-testrpc
     ```
 
-2. Download box.
+2. Clone repo
     ```javascript
-    truffle unbox react
+    git clone git@github.com:d1gits/scifi-truffle.git
+    ```
+
+3. Enter folder
+    ```javascript
+    cd scifi-truffle
     ```
 
 3. Compile and migrate the contracts.
@@ -49,11 +54,8 @@ The installation instruction and FAQ are the instructions that came with react-b
     npm run start
     ```
 
-5. Jest is included for testing React components and Truffle's own suite is included for smart contracts. Be sure you've compile your contracts before running jest, or you'll receive some file not found errors.
+5. Truffle's own suite is included for smart contracts. Be sure you've compile your contracts before running jest, or you'll receive some file not found errors.
     ```javascript
-    // Runs Jest for component tests.
-    npm run test
-
     // Runs Truffle's test suite for smart contract tests.
     truffle test
     ```
