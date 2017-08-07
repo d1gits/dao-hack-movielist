@@ -11,7 +11,6 @@ contract('Attacker', (accounts) => {
 
       // Set the initial balance
       let initialBalance = web3.eth.getBalance(accounts[0])
-      console.log(initialBalance)
 
       const doAttack = () => {
         return AttackerInstance.fundMe(
@@ -49,7 +48,6 @@ contract('Attacker', (accounts) => {
           })
           .then(() =>{
             let currBalance = web3.eth.getBalance(accounts[0]);
-            console.log(currBalance)
             // this represents 0.6 Eth if we compare it to the first part of the
             // bignumber (c[0]) which is the most reasonable comparison I could
             // think of for now but there might be a better way :)
