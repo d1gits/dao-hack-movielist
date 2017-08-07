@@ -5,8 +5,14 @@ import "truffle/DeployedAddresses.sol";
 import "../contracts/SciFi.sol";
 
 contract TestSciFi {
-  event balanceUpdate(uint balance);
+
   uint public initialBalance = 3 ether;
+  bool public gotPaid = false;
+
+  // define the default function, so that we can check if we're being paid
+  function () payable {
+    gotPaid = true;
+  }
 
   // voter struct to use in movies
   struct Voter {
@@ -19,13 +25,20 @@ contract TestSciFi {
 
     bytes32 movieName = 'Return of the Jedi';
     uint amount       = 100000000000000000;
-    uint initialScore = sciFi.getScore(movieName);
 
     sciFi.vote.value(amount)(movieName);
+    uint voteNo = sciFi.numVotes();
 
-    uint score = sciFi.getScore(movieName);
+    // define variables to be able to read a vote
+    address owner;
+    uint value;
+    bytes32 name;
+    bool retracted;
 
-    Assert.equal(score ,initialScore + amount, "Requesting the bids for Return of the Jedi should return 10000");
+    // get the vote
+    (owner, value, name, retracted) = sciFi.votes(voteNo);
+
+    Assert.equal(value, amount, "Requesting the bids for Return of the Jedi should return 100000000000000000");
   }
 
   function testRetractVote() {
@@ -33,13 +46,12 @@ contract TestSciFi {
 
     bytes32 movie       = 'Random movie';
     uint amount         = 100000000000000000;
-    uint gas            = 100000000000000000;
-    uint initialBalance = this.balance;
 
     sciFi.vote.value(amount)(movie);
-    sciFi.withdraw(this);
+    uint voteNo = sciFi.numVotes();
+    sciFi.withdrawVote(voteNo);
 
-    Assert.isAtLeast(this.balance, initialBalance - gas, "The contracts balance should equal its initial balance minus gas");
+    Assert.equal(gotPaid, true, "The contract should have received some money");
   }
 
 }
