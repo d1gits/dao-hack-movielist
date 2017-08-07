@@ -4,120 +4,55 @@ contract SciFi {
 
   //events
   event PaymentCalled(address payee, uint amount);
-  event CreateNewMovie(address buyer, uint amount, bytes32 name);
-  event UpdateExistingMovie(address buyer, uint amount, bytes32 name);
-  event TokensTransfered(address from, address to, uint amount);
-  event InsufficientFunds(uint bal);
+  event CreateNewVote(address buyer, uint amount, bytes32 name, uint numVotes);
+  event AlreadyRetracted(uint voteNo);
+  event NotTheOwner(address sender, address owner);
+  event VoteRetracted(uint voteNo);
+
 
   // voter struct to use in movies
-  struct Voter {
-    address bidder;
+  struct Vote {
+    address owner;
     uint value;
+    bytes32 name;
+    // if someone retracts a vote they withdraw their ether, so the vote should
+    // no longer count, and retracted is set to true
+    bool retracted;
   }
-
-  // movie struct containing all movie information
-  struct Movie {
-      bytes32 name;
-      uint score;
-      uint numVotes;
-      mapping (uint => Voter) votes;
-  }
-
-  // counter for the number of movies
-  uint public numMovies;
 
   // mapping of movies
-  mapping (uint => Movie) public movies;
+  mapping (uint => Vote) public votes;
 
-  // "extra fast storage" (which is used in the exploit)
-  // to retreive a users balance
-  mapping (address => uint) public balances;
+  // counter for the number of movies
+  uint public numVotes;
 
-  function vote(bytes32 name) payable {
+  function vote(bytes32 name) payable{
 
     if (msg.value==0) // if the message has no value, do nothing.
       return;
-
-    // update user balance for "fast access"
-    balances[msg.sender] += msg.value;
-
-    uint movieNum = 0;
-    for (uint i=1; i < numMovies; i++ ) { //find movie
-      if (movies[i].name == name) {
-        movieNum = i;
-      }
-    }
-    if (movieNum == 0 ) { // no movie found: create new movie
-      numMovies++;
-      movies[numMovies]          = Movie(name, msg.value, 1);
-      movies[numMovies].votes[1] = Voter(msg.sender, msg.value);
-      movieNum                   = numMovies;
-      CreateNewMovie(msg.sender, msg.value, name);
-    } else { // update existing movie
-      movies[movieNum]
-        .votes[movies[movieNum].numVotes++] = Voter(msg.sender, msg.value);
-      movies[movieNum].score += msg.value;
-      UpdateExistingMovie(msg.sender, movies[movieNum].score , name);
-    }
+    numVotes++;
+    CreateNewVote(msg.sender, msg.value, name, numVotes);
+    votes[numVotes] = Vote(msg.sender, msg.value, name, false);
   }
 
-  // get balance corresponding to address
-  function getBalance (address user) returns (uint){
-    uint balance = 0;
-
-    for (uint i=1; i < numMovies; i++ ) { // find and count all user bids
-      for (uint j=1; j< movies[i].numVotes; j++){
-        if (movies[i].votes[j].bidder == user) {
-          balance += movies[i].votes[j].value;
-        }
-      }
-
+  function withdrawVote(uint voteNo) returns (bool) {
+    // check if user is owner of the vote
+    if (votes[voteNo].owner != msg.sender){
+      NotTheOwner(msg.sender, votes[voteNo].owner);
+      revert();
     }
-    return balance;
-  }
-
-  // gets the score of a movie
-  function getScore (bytes32 name) returns (uint) {
-    for (uint i=1; i <= numMovies; i++ ) {
-      if (movies[i].name == name) {
-        return movies[i].score;
-      }
+    // check if vote is already retracted
+    if (votes[voteNo].retracted){
+      AlreadyRetracted(voteNo);
+      revert();
     }
-  }
 
-  // withdraw senders ethereum to recipient address
-  function withdraw(address _recipient) returns (bool) {
-    if (balances[msg.sender] == 0){
-        InsufficientFunds(balances[msg.sender]);
-        revert();
-    }
-    PaymentCalled(_recipient, balances[msg.sender]);
+    PaymentCalled(msg.sender, votes[voteNo].value);
 
     //this is vulnerable to recursion:
-    if (_recipient.call.value(balances[msg.sender])()) {
-        balances[msg.sender] = 0;
-
-        // find and count all user bids and substract from votes
-        for (uint i=1; i <= numMovies; i++ ) {
-          for (uint j=1; j<= movies[i].numVotes; j++){
-            if (movies[i].votes[j].bidder == msg.sender) {
-              // redue movies score with vote value
-              if(int(movies[i].score) - int(movies[i].votes[j].value) > 0) {
-                movies[i].score -= movies[i].votes[j].value;
-                movies[i].votes[j].value = 0;
-              } else {
-                movies[i].score = 0;
-                movies[i].votes[j].value = 0;
-              }
-
-              UpdateExistingMovie(
-                movies[i].votes[j].bidder,
-                movies[i].votes[j].value,
-                movies[i].name);
-            }
-          }
-        }
-        return true;
+    if (msg.sender.call.value(votes[voteNo].value)()) {
+      votes[voteNo].retracted = true;
+      VoteRetracted(voteNo);
     }
   }
 }
