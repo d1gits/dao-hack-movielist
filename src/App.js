@@ -71,7 +71,6 @@ class App extends Component {
     event.preventDefault();
     const {
       attackerHelper,
-      sciFiHelper,
       movieData,
       web3} = this.state;
 
@@ -130,10 +129,13 @@ class App extends Component {
 
   updateBalance() {
     const {web3} = this.state;
-    this.setState({
-      ...this.state,
-      balance : web3.eth.getBalance(web3.eth.accounts[0]).c[0]/10000
-    })
+    web3.eth.getAccounts((error, accounts) => {
+      const balance = web3.eth.getBalance(accounts[0]).c[0]/10000
+      this.setState({
+        ...this.state,
+        balance
+      })
+    });
   }
 
   render() {
